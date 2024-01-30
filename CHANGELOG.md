@@ -2,6 +2,12 @@
 
 All notable changes to the react-i18n-prompt extension will be documented in this file.
 
+### [0.0.5]
+
+- [bugfix]: fix no prompt when "import {type xxx}" code in typescript file by upgrade babel version and upgrade typescript version
+- [feature]: support Chinese fuzzy search
+- [feature]: support prompt when locale key wrap by ``
+
 ### [0.0.4]
 
 - [bugfix]: can not get text when i18n key in array in language package file.

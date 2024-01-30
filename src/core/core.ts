@@ -215,7 +215,7 @@ class Core {
                   `${key} - ${value}`,
                   vscode.CompletionItemKind.Field
                 );
-                item.filterText = `${key} - ${value}`;
+                item.filterText = `${key} - ${value.split('').join(' - ')}`;
                 item.insertText = key;
                 item.detail = value;
                 items.push(item);

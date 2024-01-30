@@ -82,6 +82,30 @@ class AstTool {
     return position;
   }
 
+  public createParamsLocationForTemplateLiteral(
+    languageDictionary: Map<string, string>,
+    node: t.TemplateLiteral & { loc: t.SourceLocation }
+  ) {
+    const nodeValue = node?.quasis?.[0]?.value?.raw;
+    const notFind = !languageDictionary.has(nodeValue);
+    const languageValue = languageDictionary.get(nodeValue) ?? '';
+    const desc = notFind ? 'Not find this key' : languageValue;
+    const position: ParamsLocation = {
+      paramsValue: nodeValue,
+      notFind: notFind,
+      desc: desc,
+      start: {
+        line: node.loc.start.line - 1,
+        column: node.loc.start.column,
+      },
+      end: {
+        line: node.loc.end.line - 1,
+        column: node.loc.end.column,
+      },
+    };
+    return position;
+  }
+
   public getAllParamsFromAst(
     ast: t.File,
     languageDictionary: Map<string, string>,
@@ -105,6 +129,19 @@ class AstTool {
               paramsLocations.push(
                 _this.createParamsLocation(languageDictionary, arg as any)
               );
+            } else if (_this.isTemplateLiteral(arg) && arg.loc) {
+              if (
+                !languageDictionary.has(arg?.quasis?.[0]?.value?.raw) &&
+                !showErrorMessage
+              ) {
+                return;
+              }
+              paramsLocations.push(
+                _this.createParamsLocationForTemplateLiteral(
+                  languageDictionary,
+                  arg as any
+                )
+              );
             }
           }
         } else if (_this.isI18nHooksCallee(callee)) {
@@ -117,6 +154,19 @@ class AstTool {
               }
               paramsLocations.push(
                 _this.createParamsLocation(languageDictionary, arg as any)
+              );
+            } else if (_this.isTemplateLiteral(arg) && arg.loc) {
+              if (
+                !languageDictionary.has(arg?.quasis?.[0]?.value?.raw) &&
+                !showErrorMessage
+              ) {
+                return;
+              }
+              paramsLocations.push(
+                _this.createParamsLocationForTemplateLiteral(
+                  languageDictionary,
+                  arg as any
+                )
               );
             }
           }
@@ -247,6 +297,10 @@ class AstTool {
 
   private isArrayExpression(node: t.Node): node is t.ObjectExpression {
     return t.isArrayExpression(node);
+  }
+
+  private isTemplateLiteral(node: t.Node): node is t.TemplateLiteral {
+    return t.isTemplateLiteral(node);
   }
 }
 
